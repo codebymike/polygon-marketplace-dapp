@@ -6,8 +6,8 @@ import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
 
 const ipfsAuth = 'Basic ' + Buffer.from(process.env.NEXT_PUBLIC_IPFS_KEY + ':' + process.env.NEXT_PUBLIC_IPFS_SECRET).toString('base64')
-
-const client = ipfsHttpClient({
+const ipfsEndpoint = process.env.NEXT_PUBLIC_IPFS_ENDPOINT
+const ipfsClient = ipfsHttpClient({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https',
@@ -15,8 +15,6 @@ const client = ipfsHttpClient({
       authorization: ipfsAuth,
   },
 })
-
-const ipfs_endpoint = process.env.NEXT_PUBLIC_IPFS_ENDPOINT
 
 import {
   marketplaceAddress
@@ -32,15 +30,15 @@ export default function CreateItem() {
   async function onChange(e) {
     const file = e.target.files[0]
     try {
-      const added = await client.add(
+      const added = await ipfsClient.add(
         file,
         {
           progress: (prog) => console.log(`received: ${prog}`)
         }
       )
-      const url = `${ipfs_endpoint}/${added.path}`
+      const url = `${ipfsEndpoint}/${added.path}`
 
-      client.pin.add(added.path).then((res) => {
+      ipfsClient.pin.add(added.path).then((res) => {
         console.log(res)
         setFileUrl(url)
       })
@@ -57,8 +55,8 @@ export default function CreateItem() {
       name, description, image: fileUrl
     })
     try {
-      const added = await client.add(data)
-      const url = `${ipfs_endpoint}/${added.path}`
+      const added = await ipfsClient.add(data)
+      const url = `${ipfsEndpoint}/${added.path}`
       /* after file is uploaded to IPFS, return the URL to use it in the transaction */
       return url
     } catch (error) {
