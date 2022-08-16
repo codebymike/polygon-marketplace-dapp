@@ -22,6 +22,10 @@ import {
 
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
 
+/* Creating a token process:
+1. Upload all token data (name, image url, price) to IPFS
+2. Receive a URL, store that URL in our blockchain */
+
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null)
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' })
